@@ -15,6 +15,7 @@ void calculateFPS(void);
 float rotation = 0;
 float keyrotationx = 0;
 float keyrotationy = 0;
+float changelocation = 0;
 float color = 0;
 int width = 800;
 int height = 600;
@@ -64,9 +65,11 @@ void display()
 	float tempx = keyrotationx;
 	float tempy = keyrotationy;
 
+	glTranslatef(changelocation, 0, 0);
 	glRotatef(tempy, 1, 0, 0);
 	glRotatef(tempx, 0, 1, 0);
 	obj_cube(1.0f);
+	glTranslatef(0, 0, changelocation);
 	glRotatef(tempy, -1, 0, 0);
 	glRotatef(tempx, 0, -1, 0);
 
@@ -145,6 +148,18 @@ void keyboard(unsigned char key, int x, int y)
 		rotatec = !rotatec;
 	else if (key == 108)
 		wireframe = !wireframe;
+	else if (key == 119)
+		keyrotationy += 6.0f;
+	else if (key == 115)
+		keyrotationy -= 6.0f;
+	else if (key == 97)
+		keyrotationx -= 6.0f;
+	else if (key == 100)
+		keyrotationx += 6.0f;
+	else if (key == 113)
+		changelocation += 2.0f;
+	else if (key == 101)
+		changelocation -= 2.0f;
 }
 
 void specialkeyboard(int key, int x, int y)
