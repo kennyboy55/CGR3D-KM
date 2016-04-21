@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenGL1", "OpenGL1\OpenGL1.vcxproj", "{D5EB815D-142C-4A10-B69D-A4B326B079FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rasterizer", "Rasterizer\Rasterizer.csproj", "{ED0523E4-4D43-4F82-AA49-E878B53A0631}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Debug|x64.ActiveCfg = Debug|x64
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Debug|x64.Build.0 = Debug|x64
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Debug|x86.ActiveCfg = Debug|Win32
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Debug|x86.Build.0 = Debug|Win32
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Release|Any CPU.ActiveCfg = Release|Win32
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Release|x64.ActiveCfg = Release|x64
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Release|x64.Build.0 = Release|x64
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Release|x86.ActiveCfg = Release|Win32
+		{D5EB815D-142C-4A10-B69D-A4B326B079FC}.Release|x86.Build.0 = Release|Win32
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Debug|x64.Build.0 = Debug|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Debug|x86.Build.0 = Debug|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Release|x64.ActiveCfg = Release|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Release|x64.Build.0 = Release|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Release|x86.ActiveCfg = Release|Any CPU
+		{ED0523E4-4D43-4F82-AA49-E878B53A0631}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
