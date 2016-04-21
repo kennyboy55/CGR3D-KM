@@ -16,6 +16,7 @@ float rotation = 0;
 float keyrotationx = 0;
 float keyrotationy = 0;
 float changelocation = 0;
+float camerazoom = 5;
 float color = 0;
 int width = 800;
 int height = 600;
@@ -77,14 +78,16 @@ void display()
 	//overlay
 	set_view(1);
 	std::string str0 = "FPS: " + std::to_string(fps);
-	std::string str1 = "Wireframe: " + std::string(wireframe ? "On" : "Off");
-	std::string str2 = "Projectie: " + std::string(persp ? "Perspective" : "Ortho");
-	std::string str3 = "Rotation: " + std::string(rotatec ? "On" : "Off");
+	std::string str1 = "Wireframe: " + std::string(wireframe ? "On" : "Off") + " (L)";
+	std::string str2 = "Projectie: " + std::string(persp ? "Perspective" : "Ortho") + " (SPC)";
+	std::string str3 = "Rotation: " + std::string(rotatec ? "On" : "Off") + " (R)";
+	std::string str4 = "Zoom: " + std::to_string(camerazoom) + " (+/-)";
 
 	draw_string(str0, 10, 30);
 	draw_string(str1, 10, 60);
 	draw_string(str2, 10, 90);
 	draw_string(str3, 10, 120);
+	draw_string(str4, 10, 150);
 
 	frameCount++;
 
@@ -116,7 +119,7 @@ void set_view(int view)
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		gluLookAt(cos(cameraRot) * 5, 5, sin(cameraRot) * 5,
+		gluLookAt(cos(cameraRot) * camerazoom, camerazoom, sin(cameraRot) * camerazoom,
 			0, 0, 0,
 			0, 1, 0);
 	}
@@ -160,6 +163,10 @@ void keyboard(unsigned char key, int x, int y)
 		changelocation += 2.0f;
 	else if (key == 101)
 		changelocation -= 2.0f;
+	else if (key == 43)
+		camerazoom -= (camerazoom <= 1.7f ? 0 : 0.2f);
+	else if (key == 45)
+		camerazoom += (camerazoom >= 9.9f ? 0 : 0.2f);
 }
 
 void specialkeyboard(int key, int x, int y)
