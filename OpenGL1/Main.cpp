@@ -1,20 +1,22 @@
+#include <iostream>
 #include <GL/freeglut.h>
 
+using namespace std;
 
-
-void display()
-{
+void display() {
 	glutSwapBuffers();
 }
 
-int main(int argc, char* argv[])
-{
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowPosition(800, 600);
+int main(int argc, char *argv[]) {
+
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+	glutInitWindowSize(800, 600);
+
 	glutInit(&argc, argv);
+	glutCreateWindow("Hello World");
 
 	glutDisplayFunc(display);
 
-	glutCreateWindow("Hello World");
 	glutMainLoop();
+	return 0;
 }
