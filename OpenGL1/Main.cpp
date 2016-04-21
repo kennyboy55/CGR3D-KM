@@ -2,7 +2,7 @@
 #include <GL/freeglut.h>
 
 using namespace std;
-
+void obj_cube2(void);
 float rotation = 0;
 
 void display() 
@@ -21,20 +21,8 @@ void display()
 		0, 1, 0);
 
 	glRotatef(rotation, 0, 1, 0);
-
-	glBegin(GL_TRIANGLES);
-		glColor3f(1.0f, 0.7f, 1.0f);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 1, 0);
-		glVertex3f(1, 1, 0);
-	glEnd();
-
-	glBegin(GL_TRIANGLES);
-		glColor3f(0.1,1,0.1);
-		glVertex3f(0, 0, 0);
-		glVertex3f(1, 1, 0);
-		glVertex3f(1, 0, 0);
-	glEnd();
+	glRotatef(rotation/2, 0, 0, 1);
+	obj_cube2();
 
 	glutSwapBuffers();
 }
@@ -58,6 +46,7 @@ int main(int argc, char *argv[])
 
 	glutInit(&argc, argv);
 	glutCreateWindow("Hello World");
+	glEnable(GL_DEPTH_TEST);
 
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
@@ -65,4 +54,94 @@ int main(int argc, char *argv[])
 
 	glutMainLoop();
 	return 0;
+}
+
+void obj_cube2()
+{
+	glBegin(GL_TRIANGLES);
+	glColor3f(1.0f, 0.7f, 1.0f);
+	glVertex3f(0, 0, 0);
+	glColor3f(0.5, 1, 0.1);
+	glVertex3f(0, 1, 0);
+	glVertex3f(1, 1, 0);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.1, 1, 0.1);
+	glVertex3f(0, 0, 0);
+	glVertex3f(1, 1, 0);
+	glColor3f(0.1, 1, 0.1);
+	glVertex3f(1, 0, 0);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.1, 0.5, 0.1);
+	glVertex3f(1, 1, 0);
+	glVertex3f(1, 0, 0);
+	glVertex3f(1, 1, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.1, 0.5, 0.5);
+	glVertex3f(1, 0, 1);
+	glVertex3f(1, 0, 0);
+	glVertex3f(1, 1, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.1, 0.1, 0.1);
+	glVertex3f(0, 0, 0);
+	glVertex3f(1, 0, 0);
+	glVertex3f(1, 0, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.5, 0.1, 0.1);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, 0, 1);
+	glVertex3f(1, 0, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.5, 0.1, 0.5);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, 1, 0);
+	glVertex3f(0, 1, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.5, 0.5, 0.5);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, 0, 1);
+	glVertex3f(0, 1, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.5, 1, 0.5);
+	glVertex3f(1, 1, 1);
+	glVertex3f(0, 0, 1);
+	glVertex3f(0, 1, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(1, 1, 0.5);
+	glVertex3f(1, 1, 1);
+	glVertex3f(0, 1, 0);
+	glVertex3f(0, 1, 1);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(1, 1, 1);
+	glVertex3f(1, 1, 1);
+	glVertex3f(1, 1, 0);
+	glVertex3f(0, 1, 0);
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(1, 0.3, 0.8);
+	glVertex3f(1, 1, 1);
+	glVertex3f(0, 0, 1);
+	glVertex3f(1, 0, 1);
+	glEnd();
+
 }
