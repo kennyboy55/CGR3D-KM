@@ -1,37 +1,35 @@
 #include <iostream>
+#include <string>
 #include <GL/freeglut.h>
-
-using namespace std;
 
 /* Prototypes */
 void obj_flag(void);
 void obj_cube(float clr);
 void obj_cube2(void);
+void set_view(int);
+void draw_string(std::string, int, int);
 
 float rotation = 0;
+float keyrotationx = 0;
+float keyrotationy = 0;
 float color = 0;
 int width = 800;
 int height = 600;
+bool wireframe = false;
+bool persp = true;
+bool rotatec = true;
+
+float cameraRot = 0;
 
 void display() 
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(1.0, 0.7, 0.0, 1.0);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(90, (float)width/height, 0.5f, 20.0f);
+	set_view(0);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(0, 5, -5,
-		0, 0, 0,
-		0, 1, 0);
-
-	//Cube 1
-	glRotatef(rotation, 0, 1, 0);
-	obj_cube(1.0f);
-	glRotatef(rotation, 0, -1, 0);
+	if(rotatec)
+		cameraRot += 0.001f;
 
 	//Cube 2
 	glTranslatef(3.0f, 0, 0);
@@ -54,7 +52,68 @@ void display()
 	glRotatef(rotation / 2, -1, -1, 0);
 	glTranslatef(0, 0, -3.0f);
 
+	//Cube 1
+	float tempx = keyrotationx;
+	float tempy = keyrotationy;
+
+	glRotatef(tempy, 1, 0, 0);
+	glRotatef(tempx, 0, 1, 0);
+	obj_cube(1.0f);
+	glRotatef(tempy, -1, 0, 0);
+	glRotatef(tempx, 0, -1, 0);
+
+
+	//overlay
+	set_view(1);
+	std::string str1 = "Wireframe: " + std::string(wireframe ? "On" : "Off");
+	std::string str2 = "Projectie: " + std::string(persp ? "Perspective" : "Ortho");
+	std::string str3 = "Rotation: " + std::string(rotatec ? "On" : "Off");
+
+	draw_string(str1, 10, 30);
+	draw_string(str2, 10, 60);
+	draw_string(str3, 10, 90);
+
 	glutSwapBuffers();
+}
+
+void draw_string(std::string s, int x, int y)
+{
+	glColor3f(0.0f, 0.0f, 0.0f);
+	glRasterPos3f(x, y, 0);
+	glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)s.c_str());
+}
+
+void set_view(int view)
+{
+	if (view == 0)
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		if (persp)
+			gluPerspective(90, (float)width / height, 0.5f, 20.0f);
+		else
+			glOrtho(-8, 8, -8, 8, 0.5f, 20.0f);
+
+		if (wireframe)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		gluLookAt(cos(cameraRot) * 5, 5, sin(cameraRot) * 5,
+			0, 0, 0,
+			0, 1, 0);
+	}
+	else
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, width, height, 0, -0.5f, 20.0f);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+	}
 }
 
 void idle()
@@ -67,6 +126,31 @@ void keyboard(unsigned char key, int x, int y)
 {
 	if (key == 27)
 		exit(0);
+	else if (key == 32)
+		persp = !persp;
+	else if (key == 114)
+		rotatec = !rotatec;
+	else if (key == 108)
+		wireframe = !wireframe;
+}
+
+void specialkeyboard(int key, int x, int y)
+{
+	switch (key)
+	{
+	case GLUT_KEY_UP:
+		keyrotationy += 2.0f;
+		break;
+	case GLUT_KEY_DOWN:
+		keyrotationy -= 2.0f;
+		break;
+	case GLUT_KEY_LEFT:
+		keyrotationx -= 2.0f;
+		break;
+	case GLUT_KEY_RIGHT:
+		keyrotationx += 2.0f;
+		break;
+	}
 }
 
 void mousemoved(int x, int y)
@@ -86,13 +170,15 @@ int main(int argc, char *argv[])
 	glutInitWindowSize(width, height);
 
 	glutInit(&argc, argv);
-	glutCreateWindow("Hello World");
+	glutCreateWindow("Cubes");
+
 	glEnable(GL_DEPTH_TEST);
 
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyboard);
-	glutMotionFunc(mousemoved);
+	glutSpecialFunc(specialkeyboard);
+	glutPassiveMotionFunc(mousemoved);
 	glutReshapeFunc(resize);
 
 	glutMainLoop();
