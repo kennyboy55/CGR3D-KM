@@ -8,7 +8,10 @@ void obj_cube(float clr);
 void obj_cube2(void);
 void set_view(int);
 void draw_string(std::string, int, int);
+void calculateFPS(void);
 
+
+/* Variables */
 float rotation = 0;
 float keyrotationx = 0;
 float keyrotationy = 0;
@@ -18,6 +21,11 @@ int height = 600;
 bool wireframe = false;
 bool persp = true;
 bool rotatec = true;
+
+int frameCount = 0;
+int currentTime = 0;
+int previousTime = 0;
+int fps = 0;
 
 float cameraRot = 0;
 
@@ -65,13 +73,17 @@ void display()
 
 	//overlay
 	set_view(1);
+	std::string str0 = "FPS: " + std::to_string(fps);
 	std::string str1 = "Wireframe: " + std::string(wireframe ? "On" : "Off");
 	std::string str2 = "Projectie: " + std::string(persp ? "Perspective" : "Ortho");
 	std::string str3 = "Rotation: " + std::string(rotatec ? "On" : "Off");
 
-	draw_string(str1, 10, 30);
-	draw_string(str2, 10, 60);
-	draw_string(str3, 10, 90);
+	draw_string(str0, 10, 30);
+	draw_string(str1, 10, 60);
+	draw_string(str2, 10, 90);
+	draw_string(str3, 10, 120);
+
+	frameCount++;
 
 	glutSwapBuffers();
 }
@@ -120,6 +132,7 @@ void idle()
 {
 	rotation += 0.1f;
 	glutPostRedisplay();
+	calculateFPS();
 }
 
 void keyboard(unsigned char key, int x, int y)
@@ -162,6 +175,19 @@ void resize(int w, int h)
 {
 	width = w;
 	height = w;
+}
+
+void calculateFPS()
+{
+	currentTime = glutGet(GLUT_ELAPSED_TIME);
+	int timeInterval = currentTime - previousTime;
+
+	if (timeInterval > 1000)
+	{
+		fps = frameCount / (timeInterval / 1000.0f);
+		previousTime = currentTime;
+		frameCount = 0;
+	}
 }
 
 int main(int argc, char *argv[]) 
