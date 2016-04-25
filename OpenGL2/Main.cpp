@@ -1,5 +1,7 @@
 #include <GL/freeglut.h>
 #include <cstdio>
+#include <iostream>
+
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -9,75 +11,52 @@
 float lastFrameTime = 0;
 
 int width, height;
-GLuint grassTexture, blocksTexture;
+GLuint blocksTexture;
+
+const int worldWidth = 32;
+const int worldDepth = 32;
+const int worldHeight = 8;
+const int blockSize = 2;
 
 struct Camera
 {
-	float posX = 0;
-	float posY = -4;
-	float posZ = 0;
+	float posX = -worldWidth*blockSize / 2;
+	float posZ = -worldDepth*blockSize / 2;
+	float posY = -worldHeight*blockSize;
 	float rotX = 0;
 	float rotY = 0;
 } camera;
 
+struct Block 
+{
+	int textureTop;
+	int textureSide;
+};
+
+Block world[worldWidth][worldDepth][worldHeight];
+
 bool keys[255];
 
+void generateWorld() {
 
-void drawCubeSolid(int index)
-{
-	int rowNum = index / 16;
-	int columnNum = index % 16;
-
-	float part = (float)1 / 16;
-
-	float row = rowNum * part;
-	float column = columnNum * part;
-	float rowEnd = row + part;
-	float columnEnd = column + part;
-
-	glBegin(GL_QUADS);
-
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-
-	//Side 1
-	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, -1);		//Linksonder
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, -1);		//Rechtsonder
-	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, -1);		//Rechtsboven
-	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);		//Linksboven
-
-	//Side 2
-	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, 1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, 1);
-	glTexCoord2f(column, row);			glVertex3f(-1, 1, 1);
-
-	//Side 3
-	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, -1);
-	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(-1, 1, 1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(-1, -1, 1);
-
-	//Side 4
-	glTexCoord2f(column, rowEnd);		glVertex3f(1, -1, -1);
-	glTexCoord2f(column, row);			glVertex3f(1, 1, -1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, 1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
-
-	//Bottom
-	glTexCoord2f(column, row);			glVertex3f(-1, -1, -1);
-	glTexCoord2f(column, rowEnd);		glVertex3f(1, -1, -1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(-1, -1, 1);
-
-	//Top
-	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);
-	glTexCoord2f(column, rowEnd);		glVertex3f(1, 1, -1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, 1, 1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(-1, 1, 1);
-	glEnd();
+	for (int x = 0; x < worldWidth; x++)
+	{
+		for (int z = 0; z < worldDepth; z++)
+		{
+			for (int y = 0; y < worldHeight; y++)
+			{
+				if (y < worldHeight / 2)
+					world[x][z][y] = Block{ 1, 1};
+				else if (y == worldHeight / 2)
+					world[x][z][y] = Block{ 0, 3 };
+				else
+					world[x][z][y] = Block{ -1, -1 };
+			}
+		}
+	}
 }
 
-void drawCubeSideTop(int sides, int top)
+void drawCube(int top, int sides)
 {
 	int rowNum = sides / 16;
 	int columnNum = sides % 16;
@@ -93,29 +72,29 @@ void drawCubeSideTop(int sides, int top)
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 
-	//Side 1
-	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, -1);		//Linksonder
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, -1);		//Rechtsonder
-	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, -1);		//Rechtsboven
-	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);		//Linksboven
+	//Side blockSize
+	glTexCoord2f(column, rowEnd);		glVertex3f(0, 0, 0);		//Linksonder
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(blockSize, 0, 0);		//Rechtsonder
+	glTexCoord2f(columnEnd, row);		glVertex3f(blockSize, blockSize, 0);		//Rechtsboven
+	glTexCoord2f(column, row);			glVertex3f(0, blockSize, 0);		//Linksboven
 
 																	//Side 2
-	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, 1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, 1);
-	glTexCoord2f(column, row);			glVertex3f(-1, 1, 1);
+	glTexCoord2f(column, rowEnd);		glVertex3f(0, 0, blockSize);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(blockSize, 0, blockSize);
+	glTexCoord2f(columnEnd, row);		glVertex3f(blockSize, blockSize, blockSize);
+	glTexCoord2f(column, row);			glVertex3f(0, blockSize, blockSize);
 
 	//Side 3
-	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, -1);
-	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(-1, 1, 1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(-1, -1, 1);
+	glTexCoord2f(column, rowEnd);		glVertex3f(0, 0, 0);
+	glTexCoord2f(column, row);			glVertex3f(0, blockSize, 0);
+	glTexCoord2f(columnEnd, row);		glVertex3f(0, blockSize, blockSize);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(0, 0, blockSize);
 
 	//Side 4
-	glTexCoord2f(column, rowEnd);		glVertex3f(1, -1, -1);
-	glTexCoord2f(column, row);			glVertex3f(1, 1, -1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, 1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
+	glTexCoord2f(column, rowEnd);		glVertex3f(blockSize, 0, 0);
+	glTexCoord2f(column, row);			glVertex3f(blockSize, blockSize, 0);
+	glTexCoord2f(columnEnd, row);		glVertex3f(blockSize, blockSize, blockSize);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(blockSize, 0, blockSize);
 
 	if (top == -1)
 	{
@@ -134,39 +113,43 @@ void drawCubeSideTop(int sides, int top)
 
 
 	//Bottom
-	glTexCoord2f(column, row);			glVertex3f(-1, -1, -1);
-	glTexCoord2f(column, rowEnd);		glVertex3f(1, -1, -1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(-1, -1, 1);
+	glTexCoord2f(column, row);			glVertex3f(0, 0, 0);
+	glTexCoord2f(column, rowEnd);		glVertex3f(blockSize, 0, 0);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(blockSize, 0, blockSize);
+	glTexCoord2f(columnEnd, row);		glVertex3f(0, 0, blockSize);
 
 	//Top
-	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);
-	glTexCoord2f(column, rowEnd);		glVertex3f(1, 1, -1);
-	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, 1, 1);
-	glTexCoord2f(columnEnd, row);		glVertex3f(-1, 1, 1);
+	glTexCoord2f(column, row);			glVertex3f(0, blockSize, 0);
+	glTexCoord2f(column, rowEnd);		glVertex3f(blockSize, blockSize, 0);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(blockSize, blockSize, blockSize);
+	glTexCoord2f(columnEnd, row);		glVertex3f(0, blockSize, blockSize);
 	glEnd();
+}
+
+void drawCube(int texture)
+{
+	drawCube(texture, texture);
 }
 
 void drawTree(int xlocation, int ylocation, int zlocation, int height)
 {
-	for (int z = zlocation; z <= zlocation+height; z += 2)
+	for (int z = zlocation; z <= zlocation+height; z += blockSize)
 	{
 		glPushMatrix();
 		glTranslatef((float)xlocation, (float)z, (float)ylocation);
-		drawCubeSolid(20);
+		drawCube(21, 20);
 		glPopMatrix();
 	}
 
-
-	for (int x = xlocation-(height/2); x <= xlocation+ (height / 2); x += 2)
+	for (int x = xlocation-(height/2); x <= xlocation+ (height / 2); x += blockSize)
 	{
-		for (int y = ylocation- (height / 2); y <= ylocation+ (height / 2); y += 2)
+		for (int y = ylocation- (height / 2); y <= ylocation+ (height / 2); y += blockSize)
 		{
-			for (int z = zlocation + height -(height/3); z <= zlocation + height+(height / 3); z += 2)
+			for (int z = zlocation + height -(height/3); z <= zlocation + height+(height / 3); z += blockSize)
 			{
 				glPushMatrix();
 				glTranslatef((float)x, (float)z, (float)y);
-				drawCubeSolid(53);
+				drawCube(53);
 				glPopMatrix();
 			}
 		}
@@ -187,40 +170,27 @@ void display()
 	glLoadIdentity();
 	glRotatef(camera.rotX, 1, 0, 0);
 	glRotatef(camera.rotY, 0, 1, 0);
-	glTranslatef(camera.posX, camera.posZ, camera.posY);
+	glTranslatef(camera.posX, camera.posY, camera.posZ);
 
 	glEnable(GL_TEXTURE_2D);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glBindTexture(GL_TEXTURE_2D, grassTexture);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex3f(-30, -1, -30);
-		glTexCoord2f(0, 8); glVertex3f( 30, -1, -30);
-		glTexCoord2f(8, 8); glVertex3f( 30, -1,  30);
-		glTexCoord2f(8, 0); glVertex3f(-30, -1,  30);
-	glEnd();
-
 	glBindTexture(GL_TEXTURE_2D, blocksTexture);
-	int count = 0;
 
-	for (int x = -20; x <= 20; x += 5)
+	for (int x = 0; x < worldWidth; x++)
 	{
-		for (int y = -20; y <= 20; y += 5)
+		for (int z = 0; z < worldDepth; z++)
 		{
-			glPushMatrix();
-			glTranslatef((float)x, 0.0f, (float)y);
-			drawCubeSolid(count);
-			glPopMatrix();
+			for (int y = 0; y < worldHeight; y++)
+			{
+				if (world[x][z][y].textureSide == -1)
+					continue;
 
-			count++;
-			count %= 255;
+				glPushMatrix();
+				glTranslatef((float)x*blockSize, (float)y*blockSize, (float)z*blockSize);
+				drawCube(world[x][z][y].textureTop, world[x][z][y].textureSide);
+				glPopMatrix();
+			}
 		}
 	}
-
-
-	glPushMatrix();
-	glTranslatef(0.0f, 5.0f, 0.0f);
-	drawCubeSideTop(20, 21);
-	glPopMatrix();
 
 	glDisable(GL_TEXTURE_2D);
 	glutSwapBuffers();
@@ -229,12 +199,12 @@ void display()
 void move(float angle, float fac)
 {
 	camera.posX += (float)cos((camera.rotY + angle) / 180 * M_PI) * fac;
-	camera.posY += (float)sin((camera.rotY + angle) / 180 * M_PI) * fac;
+	camera.posZ += (float)sin((camera.rotY + angle) / 180 * M_PI) * fac;
 }
 
 void moveZ(float direction, float fac)
 {
-	camera.posZ += (fac * direction);
+	camera.posY += (fac * direction);
 }
 
 void idle()
@@ -278,6 +248,29 @@ void keyboardUp(unsigned char key, int,int)
 	keys[key] = false;
 }
 
+void loadTexture()
+{
+	//Load Textures :: blocks
+	int width2, height2, bpp2;
+	unsigned char* imgData2 = stbi_load("terrain.png", &width2, &height2, &bpp2, 4);
+
+	glGenTextures(1, &blocksTexture);
+	glBindTexture(GL_TEXTURE_2D, blocksTexture);
+
+	glTexImage2D(GL_TEXTURE_2D,
+		0,		//level
+		GL_RGBA,		//internal format
+		width2,		//width
+		height2,		//height
+		0,		//border
+		GL_RGBA,		//data format
+		GL_UNSIGNED_BYTE,	//data type
+		imgData2);		//data
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	stbi_image_free(imgData2);
+}
+
 int main(int argc, char* argv[])
 {
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
@@ -302,52 +295,12 @@ int main(int argc, char* argv[])
 
 	//Cursor
 	glutWarpPointer(width / 2, height / 2);
-	//glutSetCursor(GLUT_CURSOR_NONE);
+	glutSetCursor(GLUT_CURSOR_NONE);
 
-	//Load Textures :: grass
-	int width1, height1, bpp1;
-	unsigned char* imgData1 = stbi_load("grass.jpg", &width1, &height1, &bpp1, 4);
-
-	glGenTextures(1, &grassTexture);
-	glBindTexture(GL_TEXTURE_2D, grassTexture);
-
-	glTexImage2D(GL_TEXTURE_2D,
-		0,		//level
-		GL_RGBA,		//internal format
-		width1,		//width
-		height1,		//height
-		0,		//border
-		GL_RGBA,		//data format
-		GL_UNSIGNED_BYTE,	//data type
-		imgData1);		//data
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	stbi_image_free(imgData1);
-
-
-	//Load Textures :: blocks
-	int width2, height2, bpp2;
-	unsigned char* imgData2 = stbi_load("terrain.png", &width2, &height2, &bpp2, 4);
-
-	glGenTextures(1, &blocksTexture);
-	glBindTexture(GL_TEXTURE_2D, blocksTexture);
-
-	glTexImage2D(GL_TEXTURE_2D,
-		0,		//level
-		GL_RGBA,		//internal format
-		width2,		//width
-		height2,		//height
-		0,		//border
-		GL_RGBA,		//data format
-		GL_UNSIGNED_BYTE,	//data type
-		imgData2);		//data
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	stbi_image_free(imgData2);
-
+	loadTexture();
+	generateWorld();
 
 	glutMainLoop();
-
 
 	return 0;
 }
