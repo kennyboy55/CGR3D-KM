@@ -8,6 +8,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#define STB_PERLIN_IMPLEMENTATION
+#include "stb_perlin.h"
+
 float lastFrameTime = 0;
 
 int width, height;
@@ -43,11 +46,14 @@ void generateWorld() {
 	{
 		for (int z = 0; z < worldDepth; z++)
 		{
+			int heigth = (int)(stb_perlin_noise3(100, 100, 100) * 10);
+			std::cout << height << std::endl;
+
 			for (int y = 0; y < worldHeight; y++)
 			{
 				if (y < worldHeight / 2)
 					world[x][z][y] = Block{ 1, 1};
-				else if (y == worldHeight / 2)
+				else if (y < height)
 					world[x][z][y] = Block{ 0, 3 };
 				else
 					world[x][z][y] = Block{ -1, -1 };
