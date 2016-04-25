@@ -69,6 +69,31 @@ void drawCube(int index)
 	glEnd();
 }
 
+void drawTree(int xlocation, int ylocation, int zlocation, int height)
+{
+	for (int z = zlocation; z <= zlocation+height; z += 2)
+	{
+		glPushMatrix();
+		glTranslatef((float)xlocation, (float)z, (float)ylocation);
+		drawCube(20);
+		glPopMatrix();
+	}
+
+
+	for (int x = xlocation-(height/2); x <= xlocation+ (height / 2); x += 2)
+	{
+		for (int y = ylocation- (height / 2); y <= ylocation+ (height / 2); y += 2)
+		{
+			for (int z = zlocation + height -(height/3); z <= zlocation + height+(height / 3); z += 2)
+			{
+				glPushMatrix();
+				glTranslatef((float)x, (float)z, (float)y);
+				drawCube(53);
+				glPopMatrix();
+			}
+		}
+	}
+}
 
 void display()
 {
@@ -77,7 +102,7 @@ void display()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60.0f, (float)width/height, 0.1, 30);
+	gluPerspective(60.0f, (float)width/height, 0.1, 200);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -89,12 +114,11 @@ void display()
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBindTexture(GL_TEXTURE_2D, grassTexture);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex3f(-15, -1, -15);
-		glTexCoord2f(0, 8); glVertex3f( 15, -1, -15);
-		glTexCoord2f(8, 8); glVertex3f( 15, -1,  15);
-		glTexCoord2f(8, 0); glVertex3f(-15, -1,  15);
+		glTexCoord2f(0, 0); glVertex3f(-30, -1, -30);
+		glTexCoord2f(0, 8); glVertex3f( 30, -1, -30);
+		glTexCoord2f(8, 8); glVertex3f( 30, -1,  30);
+		glTexCoord2f(8, 0); glVertex3f(-30, -1,  30);
 	glEnd();
-	
 
 	glBindTexture(GL_TEXTURE_2D, blocksTexture);
 	for (int x = -10; x <= 10; x += 5)
@@ -103,11 +127,11 @@ void display()
 		{
 			glPushMatrix();
 			glTranslatef((float)x, 0.0f, (float)y);
-			drawCube(39);
+			drawCube(21);
 			glPopMatrix();
 		}
 	}
-
+	
 	glDisable(GL_TEXTURE_2D);
 	glutSwapBuffers();
 }
@@ -183,7 +207,7 @@ int main(int argc, char* argv[])
 
 	//Cursor
 	glutWarpPointer(width / 2, height / 2);
-	glutSetCursor(GLUT_CURSOR_NONE);
+	//glutSetCursor(GLUT_CURSOR_NONE);
 
 	//Load Textures :: grass
 	int width1, height1, bpp1;
