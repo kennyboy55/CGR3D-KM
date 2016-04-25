@@ -23,7 +23,7 @@ struct Camera
 bool keys[255];
 
 
-void drawCube(int index)
+void drawCubeSolid(int index)
 {
 	int rowNum = index / 16;
 	int columnNum = index % 16;
@@ -35,37 +35,115 @@ void drawCube(int index)
 	float rowEnd = row + part;
 	float columnEnd = column + part;
 
+	glBegin(GL_QUADS);
+
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+
+	//Side 1
+	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, -1);		//Linksonder
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, -1);		//Rechtsonder
+	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, -1);		//Rechtsboven
+	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);		//Linksboven
+
+	//Side 2
+	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, 1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, 1);
+	glTexCoord2f(column, row);			glVertex3f(-1, 1, 1);
+
+	//Side 3
+	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, -1);
+	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(-1, 1, 1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(-1, -1, 1);
+
+	//Side 4
+	glTexCoord2f(column, rowEnd);		glVertex3f(1, -1, -1);
+	glTexCoord2f(column, row);			glVertex3f(1, 1, -1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, 1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
+
+	//Bottom
+	glTexCoord2f(column, row);			glVertex3f(-1, -1, -1);
+	glTexCoord2f(column, rowEnd);		glVertex3f(1, -1, -1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(-1, -1, 1);
+
+	//Top
+	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);
+	glTexCoord2f(column, rowEnd);		glVertex3f(1, 1, -1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, 1, 1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(-1, 1, 1);
+	glEnd();
+}
+
+void drawCubeSideTop(int sides, int top)
+{
+	int rowNum = sides / 16;
+	int columnNum = sides % 16;
+
+	float part = (float)1 / 16;
+
+	float row = rowNum * part;
+	float column = columnNum * part;
+	float rowEnd = row + part;
+	float columnEnd = column + part;
 
 	glBegin(GL_QUADS);
-	glTexCoord2f(column, row); glVertex3f(-1, -1, -1);
-	glTexCoord2f(column, rowEnd); glVertex3f(1, -1, -1);
-	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, 1, -1);
-	glTexCoord2f(columnEnd, row); glVertex3f(-1, 1, -1);
 
-	glTexCoord2f(column, row); glVertex3f(-1, -1, 1);
-	glTexCoord2f(column, rowEnd); glVertex3f(1, -1, 1);
-	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, 1, 1);
-	glTexCoord2f(columnEnd, row); glVertex3f(-1, 1, 1);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
 
-	glTexCoord2f(column, row); glVertex3f(-1, -1, -1);
-	glTexCoord2f(column, rowEnd); glVertex3f(-1, 1, -1);
-	glTexCoord2f(columnEnd, rowEnd); glVertex3f(-1, 1, 1);
-	glTexCoord2f(columnEnd, row); glVertex3f(-1, -1, 1);
+	//Side 1
+	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, -1);		//Linksonder
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, -1);		//Rechtsonder
+	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, -1);		//Rechtsboven
+	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);		//Linksboven
 
-	glTexCoord2f(column, row); glVertex3f(1, -1, -1);
-	glTexCoord2f(column, rowEnd); glVertex3f(1, 1, -1);
-	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, 1, 1);
-	glTexCoord2f(columnEnd, row); glVertex3f(1, -1, 1);
+																	//Side 2
+	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, 1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, 1);
+	glTexCoord2f(column, row);			glVertex3f(-1, 1, 1);
 
-	glTexCoord2f(column, row); glVertex3f(-1, -1, -1);
-	glTexCoord2f(column, rowEnd); glVertex3f(1, -1, -1);
-	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, -1, 1);
-	glTexCoord2f(columnEnd, row); glVertex3f(-1, -1, 1);
+	//Side 3
+	glTexCoord2f(column, rowEnd);		glVertex3f(-1, -1, -1);
+	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(-1, 1, 1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(-1, -1, 1);
 
-	glTexCoord2f(column, row); glVertex3f(-1, 1, -1);
-	glTexCoord2f(column, rowEnd); glVertex3f(1, 1, -1);
-	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, 1, 1);
-	glTexCoord2f(columnEnd, row); glVertex3f(-1, 1, 1);
+	//Side 4
+	glTexCoord2f(column, rowEnd);		glVertex3f(1, -1, -1);
+	glTexCoord2f(column, row);			glVertex3f(1, 1, -1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(1, 1, 1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
+
+	if (top == -1)
+	{
+		glEnd();
+		return;
+	}
+
+	//Different textures
+	rowNum = top / 16;
+	columnNum = top % 16;
+
+	row = rowNum * part;
+	column = columnNum * part;
+	rowEnd = row + part;
+	columnEnd = column + part;
+
+
+	//Bottom
+	glTexCoord2f(column, row);			glVertex3f(-1, -1, -1);
+	glTexCoord2f(column, rowEnd);		glVertex3f(1, -1, -1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, -1, 1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(-1, -1, 1);
+
+	//Top
+	glTexCoord2f(column, row);			glVertex3f(-1, 1, -1);
+	glTexCoord2f(column, rowEnd);		glVertex3f(1, 1, -1);
+	glTexCoord2f(columnEnd, rowEnd);	glVertex3f(1, 1, 1);
+	glTexCoord2f(columnEnd, row);		glVertex3f(-1, 1, 1);
 	glEnd();
 }
 
@@ -77,7 +155,7 @@ void display()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60.0f, (float)width/height, 0.1, 30);
+	gluPerspective(60.0f, (float)width/height, 0.5, 50);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -97,16 +175,27 @@ void display()
 	
 
 	glBindTexture(GL_TEXTURE_2D, blocksTexture);
-	for (int x = -10; x <= 10; x += 5)
+	int count = 0;
+
+	for (int x = -20; x <= 20; x += 5)
 	{
-		for (int y = -10; y <= 10; y += 5)
+		for (int y = -20; y <= 20; y += 5)
 		{
 			glPushMatrix();
 			glTranslatef((float)x, 0.0f, (float)y);
-			drawCube(39);
+			drawCubeSolid(count);
 			glPopMatrix();
+
+			count++;
+			count %= 255;
 		}
 	}
+
+	glPushMatrix();
+	glTranslatef(0.0f, 5.0f, 0.0f);
+	drawCubeSideTop(20, 21);
+	glPopMatrix();
+
 
 	glDisable(GL_TEXTURE_2D);
 	glutSwapBuffers();
@@ -173,6 +262,11 @@ int main(int argc, char* argv[])
 
 	memset(keys, 0, sizeof(keys));
 	glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.01f);
 
 	glutIdleFunc(idle);
 	glutDisplayFunc(display);
