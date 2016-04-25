@@ -15,6 +15,7 @@ struct Camera
 {
 	float posX = 0;
 	float posY = -4;
+	float posZ = 0;
 	float rotX = 0;
 	float rotY = 0;
 } camera;
@@ -22,44 +23,49 @@ struct Camera
 bool keys[255];
 
 
-void drawCube()
+void drawCube(int index)
 {
+	int rowNum = index / 16;
+	int columnNum = index % 16;
+
+	float part = (float)1 / 16;
+
+	float row = rowNum * part;
+	float column = columnNum * part;
+	float rowEnd = row + part;
+	float columnEnd = column + part;
+
+
 	glBegin(GL_QUADS);
-	glColor3f(1, 0, 0);
-	glVertex3f(-1, -1, -1);
-	glVertex3f(1, -1, -1);
-	glVertex3f(1, 1, -1);
-	glVertex3f(-1, 1, -1);
+	glTexCoord2f(column, row); glVertex3f(-1, -1, -1);
+	glTexCoord2f(column, rowEnd); glVertex3f(1, -1, -1);
+	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, 1, -1);
+	glTexCoord2f(columnEnd, row); glVertex3f(-1, 1, -1);
 
-	glColor3f(1, 1, 0);
-	glVertex3f(-1, -1, 1);
-	glVertex3f(1, -1, 1);
-	glVertex3f(1, 1, 1);
-	glVertex3f(-1, 1, 1);
+	glTexCoord2f(column, row); glVertex3f(-1, -1, 1);
+	glTexCoord2f(column, rowEnd); glVertex3f(1, -1, 1);
+	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, 1, 1);
+	glTexCoord2f(columnEnd, row); glVertex3f(-1, 1, 1);
 
-	glColor3f(0, 0, 1);
-	glVertex3f(-1, -1, -1);
-	glVertex3f(-1, 1, -1);
-	glVertex3f(-1, 1, 1);
-	glVertex3f(-1, -1, 1);
+	glTexCoord2f(column, row); glVertex3f(-1, -1, -1);
+	glTexCoord2f(column, rowEnd); glVertex3f(-1, 1, -1);
+	glTexCoord2f(columnEnd, rowEnd); glVertex3f(-1, 1, 1);
+	glTexCoord2f(columnEnd, row); glVertex3f(-1, -1, 1);
 
-	glColor3f(1, -1, 1);
-	glVertex3f(1, -1, -1);
-	glVertex3f(1, 1, -1);
-	glVertex3f(1, 1, 1);
-	glVertex3f(1, -1, 1);
+	glTexCoord2f(column, row); glVertex3f(1, -1, -1);
+	glTexCoord2f(column, rowEnd); glVertex3f(1, 1, -1);
+	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, 1, 1);
+	glTexCoord2f(columnEnd, row); glVertex3f(1, -1, 1);
 
-	glColor3f(0, 1, 0);
-	glVertex3f(-1, -1, -1);
-	glVertex3f(1, -1, -1);
-	glVertex3f(1, -1, 1);
-	glVertex3f(-1, -1, 1);
+	glTexCoord2f(column, row); glVertex3f(-1, -1, -1);
+	glTexCoord2f(column, rowEnd); glVertex3f(1, -1, -1);
+	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, -1, 1);
+	glTexCoord2f(columnEnd, row); glVertex3f(-1, -1, 1);
 
-	glColor3f(1, 1, 0);
-	glVertex3f(-1, 1, -1);
-	glVertex3f(1, 1, -1);
-	glVertex3f(1, 1, 1);
-	glVertex3f(-1, 1, 1);
+	glTexCoord2f(column, row); glVertex3f(-1, 1, -1);
+	glTexCoord2f(column, rowEnd); glVertex3f(1, 1, -1);
+	glTexCoord2f(columnEnd, rowEnd); glVertex3f(1, 1, 1);
+	glTexCoord2f(columnEnd, row); glVertex3f(-1, 1, 1);
 	glEnd();
 }
 
@@ -77,30 +83,32 @@ void display()
 	glLoadIdentity();
 	glRotatef(camera.rotX, 1, 0, 0);
 	glRotatef(camera.rotY, 0, 1, 0);
-	glTranslatef(camera.posX, 0, camera.posY);
+	glTranslatef(camera.posX, camera.posZ, camera.posY);
 
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	glBindTexture(GL_TEXTURE_2D, grassTexture);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 0); glVertex3f(-15, -1, -15);
-		glTexCoord2f(0, 1); glVertex3f( 15, -1, -15);
-		glTexCoord2f(1, 1); glVertex3f( 15, -1,  15);
-		glTexCoord2f(1, 0); glVertex3f(-15, -1,  15);
+		glTexCoord2f(0, 8); glVertex3f( 15, -1, -15);
+		glTexCoord2f(8, 8); glVertex3f( 15, -1,  15);
+		glTexCoord2f(8, 0); glVertex3f(-15, -1,  15);
 	glEnd();
-	glDisable(GL_TEXTURE_2D);
+	
 
+	glBindTexture(GL_TEXTURE_2D, blocksTexture);
 	for (int x = -10; x <= 10; x += 5)
 	{
 		for (int y = -10; y <= 10; y += 5)
 		{
 			glPushMatrix();
 			glTranslatef((float)x, 0.0f, (float)y);
-			drawCube();
+			drawCube(39);
 			glPopMatrix();
 		}
 	}
 
+	glDisable(GL_TEXTURE_2D);
 	glutSwapBuffers();
 }
 
@@ -108,6 +116,11 @@ void move(float angle, float fac)
 {
 	camera.posX += (float)cos((camera.rotY + angle) / 180 * M_PI) * fac;
 	camera.posY += (float)sin((camera.rotY + angle) / 180 * M_PI) * fac;
+}
+
+void moveZ(float direction, float fac)
+{
+	camera.posZ += (fac * direction);
 }
 
 void idle()
@@ -121,6 +134,8 @@ void idle()
 	if (keys['d']) move(180, deltaTime*speed);
 	if (keys['w']) move(90, deltaTime*speed);
 	if (keys['s']) move(270, deltaTime*speed);
+	if (keys['q']) moveZ(-1, deltaTime*speed);
+	if (keys['e']) moveZ(1, deltaTime*speed);
 
 	glutPostRedisplay();
 }
@@ -187,12 +202,13 @@ int main(int argc, char* argv[])
 		GL_UNSIGNED_BYTE,	//data type
 		imgData1);		//data
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	stbi_image_free(imgData1);
 
 
 	//Load Textures :: blocks
 	int width2, height2, bpp2;
-	unsigned char* imgData2 = stbi_load("terrain.jpg", &width2, &height2, &bpp2, 4);
+	unsigned char* imgData2 = stbi_load("terrain.png", &width2, &height2, &bpp2, 4);
 
 	glGenTextures(1, &blocksTexture);
 	glBindTexture(GL_TEXTURE_2D, blocksTexture);
@@ -206,7 +222,8 @@ int main(int argc, char* argv[])
 		GL_RGBA,		//data format
 		GL_UNSIGNED_BYTE,	//data type
 		imgData2);		//data
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	stbi_image_free(imgData2);
 
 
