@@ -3,10 +3,13 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 float lastFrameTime = 0;
 
 int width, height;
-
+GLuint grassTexture, blocksTexture;
 
 struct Camera
 {
@@ -76,14 +79,16 @@ void display()
 	glRotatef(camera.rotY, 0, 1, 0);
 	glTranslatef(camera.posX, 0, camera.posY);
 
-
-	glColor3f(0.1f, 1.0f, 0.2f);
+	glEnable(GL_TEXTURE_2D);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glBindTexture(GL_TEXTURE_2D, grassTexture);
 	glBegin(GL_QUADS);
-		glVertex3f(-15, -1, -15);
-		glVertex3f( 15, -1, -15);
-		glVertex3f( 15, -1,  15);
-		glVertex3f(-15, -1,  15);
+		glTexCoord2f(0, 0); glVertex3f(-15, -1, -15);
+		glTexCoord2f(0, 1); glVertex3f( 15, -1, -15);
+		glTexCoord2f(1, 1); glVertex3f( 15, -1,  15);
+		glTexCoord2f(1, 0); glVertex3f(-15, -1,  15);
 	glEnd();
+	glDisable(GL_TEXTURE_2D);
 
 	for (int x = -10; x <= 10; x += 5)
 	{
@@ -161,7 +166,49 @@ int main(int argc, char* argv[])
 	glutKeyboardUpFunc(keyboardUp);
 	glutPassiveMotionFunc(mousePassiveMotion);
 
+	//Cursor
 	glutWarpPointer(width / 2, height / 2);
+	glutSetCursor(GLUT_CURSOR_NONE);
+
+	//Load Textures :: grass
+	int width1, height1, bpp1;
+	unsigned char* imgData1 = stbi_load("grass.jpg", &width1, &height1, &bpp1, 4);
+
+	glGenTextures(1, &grassTexture);
+	glBindTexture(GL_TEXTURE_2D, grassTexture);
+
+	glTexImage2D(GL_TEXTURE_2D,
+		0,		//level
+		GL_RGBA,		//internal format
+		width1,		//width
+		height1,		//height
+		0,		//border
+		GL_RGBA,		//data format
+		GL_UNSIGNED_BYTE,	//data type
+		imgData1);		//data
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	stbi_image_free(imgData1);
+
+
+	//Load Textures :: blocks
+	int width2, height2, bpp2;
+	unsigned char* imgData2 = stbi_load("terrain.jpg", &width2, &height2, &bpp2, 4);
+
+	glGenTextures(1, &blocksTexture);
+	glBindTexture(GL_TEXTURE_2D, blocksTexture);
+
+	glTexImage2D(GL_TEXTURE_2D,
+		0,		//level
+		GL_RGBA,		//internal format
+		width2,		//width
+		height2,		//height
+		0,		//border
+		GL_RGBA,		//data format
+		GL_UNSIGNED_BYTE,	//data type
+		imgData2);		//data
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	stbi_image_free(imgData2);
+
 
 	glutMainLoop();
 
