@@ -131,37 +131,6 @@ void display()
 			glPopMatrix();
 		}
 	}
-
-	for (int x = 12; x <= 22; x += 2)
-	{
-		for (int y = 12; y <= 22; y += 2)
-		{
-			for (int z = 1; z <= 22; z += 2)
-			{
-				glPushMatrix();
-				glTranslatef((float)x, (float)z, (float)y);
-				drawCube(1);
-				glPopMatrix();
-			}
-		}
-	}
-
-	for (int x = 12; x <= 22; x += 2)
-	{
-				glPushMatrix();
-				glTranslatef((float)x, 0.0f, 0.0f);
-				drawCube(6);
-				glPopMatrix();
-
-	}
-
-	drawTree(0, 0, 0,10);
-
-	drawTree(-12, -12, 0, 5);
-	drawTree(15, 15, 22, 10);
-	drawTree(12, -12, 0, 6);
-
-	//drawTree(-12, 12, 0, 50);
 	
 	glDisable(GL_TEXTURE_2D);
 	glutSwapBuffers();
