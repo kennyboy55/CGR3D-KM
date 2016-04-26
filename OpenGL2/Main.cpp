@@ -11,6 +11,8 @@
 #define STB_PERLIN_IMPLEMENTATION
 #include "stb_perlin.h"
 
+void drawTree(int, int, int, int);
+
 float lastFrameTime = 0;
 
 float speed = 10;
@@ -58,10 +60,10 @@ void generateWorld() {
 			for (int y = 0; y < worldHeight; y++)
 			{
 				if (y < worldHeight / 2)
-					world[x][z][y] = Block{ 1, 1};
+					world[x][z][y] = Block{ 1, 1 };
 				else if (y < (heightInt + worldHeight / 2))
 					world[x][z][y] = Block{ 2, 2 };
-				else if (y == (heightInt + worldHeight/2))
+				else if (y == (heightInt + worldHeight / 2))
 					world[x][z][y] = Block{ 0, 3 };
 				else
 					world[x][z][y] = Block{ -1, -1 };
@@ -150,7 +152,8 @@ void drawTree(int xlocation, int ylocation, int zlocation, int height)
 	for (int z = zlocation; z <= zlocation+height; z += blockSize)
 	{
 		glPushMatrix();
-		glTranslatef((float)xlocation, (float)z, (float)ylocation);
+		world[xlocation][z][ylocation] = Block{ 21, 20 };
+		//glTranslatef((float)xlocation, (float)z, (float)ylocation);
 		drawCube(21, 20);
 		glPopMatrix();
 	}
@@ -162,8 +165,9 @@ void drawTree(int xlocation, int ylocation, int zlocation, int height)
 			for (int z = zlocation + height -(height/3); z <= zlocation + height+(height / 3); z += blockSize)
 			{
 				glPushMatrix();
-				glTranslatef((float)x, (float)z, (float)y);
-				drawCube(53);
+				world[x][z][y] = Block{ 0, 53 };
+				//glTranslatef((float)x, (float)z, (float)y);
+				//drawCube(53);
 				glPopMatrix();
 			}
 		}
