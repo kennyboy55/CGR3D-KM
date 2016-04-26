@@ -46,14 +46,17 @@ void generateWorld() {
 	{
 		for (int z = 0; z < worldDepth; z++)
 		{
-			int heigth = (int)(stb_perlin_noise3(100, 100, 100) * 10);
-			std::cout << height << std::endl;
+			float heigth = stb_perlin_noise3((1.0f/(float)worldWidth)*(float)x, (1.0f / (float)worldDepth)*(float)z, 0);
+			int heightInt = (int)(height * 8);
+			std::cout << height << " - " << heightInt << std::endl;
 
 			for (int y = 0; y < worldHeight; y++)
 			{
 				if (y < worldHeight / 2)
 					world[x][z][y] = Block{ 1, 1};
-				else if (y < height)
+				else if (y < (heightInt + worldHeight / 2))
+					world[x][z][y] = Block{ 2, 2 };
+				else if (y == (heightInt + worldHeight/2))
 					world[x][z][y] = Block{ 0, 3 };
 				else
 					world[x][z][y] = Block{ -1, -1 };
