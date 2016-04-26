@@ -1,5 +1,6 @@
 #include <GL/freeglut.h>
 #include <cstdio>
+#include <time.h>
 #include <iostream>
 
 #define _USE_MATH_DEFINES
@@ -11,7 +12,9 @@
 #define STB_PERLIN_IMPLEMENTATION
 #include "stb_perlin.h"
 
-void drawTree(int, int, int, int);
+
+void generateTree(int, int, int);
+
 
 float lastFrameTime = 0;
 
@@ -20,8 +23,8 @@ float speed = 10;
 int width, height;
 GLuint blocksTexture;
 
-const int worldWidth = 32;
-const int worldDepth = 32;
+const int worldWidth = 64;
+const int worldDepth = 64;
 const int worldHeight = 8;
 const int blockSize = 2;
 
@@ -46,9 +49,18 @@ bool keys[255];
 
 void generateWorld() {
 
+	std::srand(time(NULL));
 	float rand = std::rand() * (1.0f / worldDepth);
 
 	std::cout << "Generating world... " << rand << std::endl;
+
+	for (int x = 0; x < worldWidth; x++){
+		for (int z = 0; z < worldDepth; z++){
+			for (int y = 0; y < worldHeight; y++){
+				world[x][z][y] = Block{ -1,-1 };
+			}
+		}
+	}
 
 	for (int x = 0; x < worldWidth; x++)
 	{
@@ -59,14 +71,22 @@ void generateWorld() {
 
 			for (int y = 0; y < worldHeight; y++)
 			{
-				if (y < worldHeight / 2)
-					world[x][z][y] = Block{ 1, 1 };
-				else if (y < (heightInt + worldHeight / 2))
+
+				if (y < worldHeight / 4)
+					world[x][z][y] = Block{ 1, 1};
+				else if (y < (heightInt + worldHeight / 4))
 					world[x][z][y] = Block{ 2, 2 };
-				else if (y == (heightInt + worldHeight / 2))
+				else if (y == (heightInt + worldHeight / 4))
+				{
+
 					world[x][z][y] = Block{ 0, 3 };
-				else
-					world[x][z][y] = Block{ -1, -1 };
+
+					int d = std::rand() % 100;
+					if (d > 98)
+						generateTree(x, y, z);
+					else if (d > 93)
+						world[x][z][y + 1] = Block{ -1, 39 };
+				}
 			}
 		}
 	}
@@ -147,8 +167,13 @@ void drawCube(int texture)
 	drawCube(texture, texture);
 }
 
-void drawTree(int xlocation, int ylocation, int zlocation, int height)
+void generateTree(int xlocation, int ylocation, int zlocation)
 {
+	int size = std::rand() % 5 +  5; //Size from 5 to 10;
+	
+	return;
+
+
 	for (int z = zlocation; z <= zlocation+height; z += blockSize)
 	{
 		glPushMatrix();
@@ -181,7 +206,7 @@ void display()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60.0f, (float)width/height, 0.5, 50);
+	gluPerspective(60.0f, (float)width/height, 0.5, 75);
 
 
 	glMatrixMode(GL_MODELVIEW);
