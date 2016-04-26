@@ -25,7 +25,7 @@ GLuint blocksTexture;
 
 const int worldWidth = 64;
 const int worldDepth = 64;
-const int worldHeight = 24;
+const int worldHeight = 16;
 const int blockSize = 2;
 
 struct Camera
@@ -73,9 +73,21 @@ void generateWorld() {
 			{
 
 				if (y < worldHeight / 4)
-					world[x][z][y] = Block{ 1, 1};
+				{
+					int d = std::rand() % 100;
+					if (d > 95)
+						world[x][z][y] = Block{ 32, 32 };
+					else if (d > 92)
+						world[x][z][y] = Block{ 33, 33 };
+					else if (d > 90)
+						world[x][z][y] = Block{ 34, 34 };
+					else
+						world[x][z][y] = Block{ 1, 1 };
+				}
 				else if (y < (heightInt + worldHeight / 4))
+				{
 					world[x][z][y] = Block{ 2, 2 };
+				}
 				else if (y == (heightInt + worldHeight / 4))
 				{
 					world[x][z][y] = Block{ 0, 3 };
@@ -168,12 +180,20 @@ void drawCube(int texture)
 
 void generateTree(int xlocation, int zlocation, int ylocation)
 {
-	int size = std::rand() % 3 +  3; //Size from 3 to 6;
+	int size = std::rand() % 3 +  3; //Size from 2 to 5;
+	int treetype = std::rand() % 4;
 
 	for (int y = ylocation; y <= ylocation+size; y ++)
 	{
 		if (y >= 0 && y < worldHeight)
-			world[xlocation][zlocation][y] = Block{ 21, 20 };
+		{
+			if(treetype <= 1)
+				world[xlocation][zlocation][y] = Block{ 21, 20 };
+			else if(treetype <= 2)
+				world[xlocation][zlocation][y] = Block{ 21, 117 };
+			else
+				world[xlocation][zlocation][y] = Block{ 21, 116 };
+		}
 	}
 
 	for (int x = xlocation-(size /2); x <= xlocation+ (size / 2); x ++)
@@ -182,8 +202,15 @@ void generateTree(int xlocation, int zlocation, int ylocation)
 		{
 			for (int y = ylocation + size -(size /3); y <= ylocation + size +(size / 3); y ++)
 			{
-				if(x >= 0 && x < worldWidth && z >= 0 && z < worldDepth && y >= 0 && y < worldHeight)
-					world[x][z][y] = Block{ 0, 53 };
+				if (x >= 0 && x < worldWidth && z >= 0 && z < worldDepth && y >= 0 && y < worldHeight)
+				{
+					
+
+					if (treetype <= 2)
+						world[x][z][y] = Block{ 52, 52 };
+					else
+						world[x][z][y] = Block{ 132, 132 };
+				}
 			}
 		}
 	}
@@ -196,7 +223,7 @@ void display()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60.0f, (float)width/height, 0.5, 75);
+	gluPerspective(60.0f, (float)width/height, 0.5, 300);
 
 
 	glMatrixMode(GL_MODELVIEW);
@@ -311,7 +338,7 @@ int main(int argc, char* argv[])
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(800, 600);
 	glutInit(&argc, argv);
-	glutCreateWindow("Hello World");
+	glutCreateWindow("Minecraft 2.0");
 
 	memset(keys, 0, sizeof(keys));
 	glEnable(GL_DEPTH_TEST);
