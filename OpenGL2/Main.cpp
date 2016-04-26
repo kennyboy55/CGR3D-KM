@@ -25,7 +25,7 @@ GLuint blocksTexture;
 
 const int worldWidth = 64;
 const int worldDepth = 64;
-const int worldHeight = 8;
+const int worldHeight = 24;
 const int blockSize = 2;
 
 struct Camera
@@ -78,12 +78,11 @@ void generateWorld() {
 					world[x][z][y] = Block{ 2, 2 };
 				else if (y == (heightInt + worldHeight / 4))
 				{
-
 					world[x][z][y] = Block{ 0, 3 };
 
 					int d = std::rand() % 100;
 					if (d > 98)
-						generateTree(x, y, z);
+						generateTree(x, z, y+1);
 					else if (d > 93)
 						world[x][z][y + 1] = Block{ -1, 39 };
 				}
@@ -167,33 +166,24 @@ void drawCube(int texture)
 	drawCube(texture, texture);
 }
 
-void generateTree(int xlocation, int ylocation, int zlocation)
+void generateTree(int xlocation, int zlocation, int ylocation)
 {
-	int size = std::rand() % 5 +  5; //Size from 5 to 10;
-	
-	return;
+	int size = std::rand() % 3 +  3; //Size from 3 to 6;
 
-
-	for (int z = zlocation; z <= zlocation+height; z += blockSize)
+	for (int y = ylocation; y <= ylocation+size; y ++)
 	{
-		glPushMatrix();
-		world[xlocation][z][ylocation] = Block{ 21, 20 };
-		//glTranslatef((float)xlocation, (float)z, (float)ylocation);
-		drawCube(21, 20);
-		glPopMatrix();
+		if (y >= 0 && y < worldHeight)
+			world[xlocation][zlocation][y] = Block{ 21, 20 };
 	}
 
-	for (int x = xlocation-(height/2); x <= xlocation+ (height / 2); x += blockSize)
+	for (int x = xlocation-(size /2); x <= xlocation+ (size / 2); x ++)
 	{
-		for (int y = ylocation- (height / 2); y <= ylocation+ (height / 2); y += blockSize)
+		for (int z = zlocation- (size / 2); z <= zlocation+ (size / 2); z ++)
 		{
-			for (int z = zlocation + height -(height/3); z <= zlocation + height+(height / 3); z += blockSize)
+			for (int y = ylocation + size -(size /3); y <= ylocation + size +(size / 3); y ++)
 			{
-				glPushMatrix();
-				world[x][z][y] = Block{ 0, 53 };
-				//glTranslatef((float)x, (float)z, (float)y);
-				//drawCube(53);
-				glPopMatrix();
+				if(x >= 0 && x < worldWidth && z >= 0 && z < worldDepth && y >= 0 && y < worldHeight)
+					world[x][z][y] = Block{ 0, 53 };
 			}
 		}
 	}
