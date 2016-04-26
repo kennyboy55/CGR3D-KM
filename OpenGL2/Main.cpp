@@ -13,6 +13,8 @@
 
 float lastFrameTime = 0;
 
+float speed = 10;
+
 int width, height;
 GLuint blocksTexture;
 
@@ -42,13 +44,16 @@ bool keys[255];
 
 void generateWorld() {
 
+	float rand = std::rand() * (1.0f / worldDepth);
+
+	std::cout << "Generating world... " << rand << std::endl;
+
 	for (int x = 0; x < worldWidth; x++)
 	{
 		for (int z = 0; z < worldDepth; z++)
 		{
-			float heigth = stb_perlin_noise3((1.0f/(float)worldWidth)*(float)x, (1.0f / (float)worldDepth)*(float)z, 0);
-			int heightInt = (int)(height * 8);
-			std::cout << height << " - " << heightInt << std::endl;
+			float h = stb_perlin_noise3((1.0f/(float)worldWidth)*(float)x, (1.0f / (float)worldDepth)*(float)z, rand);
+			int heightInt = abs((int)(h * 8));
 
 			for (int y = 0; y < worldHeight; y++)
 			{
@@ -222,7 +227,9 @@ void idle()
 	float deltaTime = frameTime - lastFrameTime;
 	lastFrameTime = frameTime;
 
-	const float speed = 3;
+	if (keys['+']) speed += speed > 25 ? 0 : 0.5;
+	if (keys['-']) speed -= speed < 5 ? 0 : 0.5;
+
 	if (keys['a']) move(0, deltaTime*speed);
 	if (keys['d']) move(180, deltaTime*speed);
 	if (keys['w']) move(90, deltaTime*speed);
