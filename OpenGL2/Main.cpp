@@ -196,20 +196,25 @@ void generateTree(int xlocation, int zlocation, int ylocation)
 		}
 	}
 
-	for (int x = xlocation-(size /2); x <= xlocation+ (size / 2); x ++)
+	for (int x = (-size /2); x <=  (size / 2); x ++)
 	{
-		for (int z = zlocation- (size / 2); z <= zlocation+ (size / 2); z ++)
+		for (int z = - (size / 2); z <=  (size / 2); z ++)
 		{
-			for (int y = ylocation + size -(size /3); y <= ylocation + size +(size / 3); y ++)
+			for (int y = size - (size / 3); y <= size + (size / 3); y++)
 			{
-				if (x >= 0 && x < worldWidth && z >= 0 && z < worldDepth && y >= 0 && y < worldHeight)
+				if (x + xlocation >= 0 && x + xlocation < worldWidth && z + zlocation >= 0 && z + zlocation < worldDepth && y + ylocation >= 0 && y + ylocation < worldHeight)
 				{
-					
+					if (abs(x) == (size / 2) && abs(y) == size + (size / 3)|| abs(z) == (size / 2) && abs(y) == size + (size / 3))
+					{
 
-					if (treetype <= 2)
-						world[x][z][y] = Block{ 52, 52 };
+					}
 					else
-						world[x][z][y] = Block{ 132, 132 };
+					{
+						if (treetype <= 2)
+							world[x + xlocation][z + zlocation][y + ylocation] = Block{ 52, 52 };
+						else
+							world[x + xlocation][z + zlocation][y + ylocation] = Block{ 132, 132 };
+					}
 				}
 			}
 		}
