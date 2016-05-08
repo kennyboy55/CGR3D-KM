@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <time.h>
 #include <iostream>
+#include <windows.h>
+#include <mmsystem.h>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -14,11 +16,7 @@
 
 
 void generateTree(int, int, int);
-
-
-float lastFrameTime = 0;
-
-float speed = 10;
+void generateWater(int, int, int);
 
 int width, height;
 GLuint blocksTexture;
@@ -28,13 +26,18 @@ const int worldDepth = 64;
 const int worldHeight = 16;
 const int blockSize = 2;
 
+float lastFrameTime = 0;
+float lastypos = 0;
+float speed = 10;
+float eyeheight = 3;
+
 struct Camera
 {
-	float posX = -worldWidth*blockSize / 2;
-	float posZ = -worldDepth*blockSize / 2;
-	float posY = -worldHeight*blockSize;
+	float posX = 0;
+	float posZ = 0;
+	float posY = 0;
 	float rotX = 0;
-	float rotY = 0;
+	float rotY = 120;
 } camera;
 
 struct Block 
@@ -71,15 +74,18 @@ void generateWorld() {
 
 			for (int y = 0; y < worldHeight; y++)
 			{
+				if (world[x][z][y].textureSide != -1)
+					continue;
+
 
 				if (y < worldHeight / 4)
 				{
-					int d = std::rand() % 100;
-					if (d > 95)
+					int d = std::rand() % 1000;
+					if (d > 990)
 						world[x][z][y] = Block{ 32, 32 };
-					else if (d > 92)
+					else if (d > 960)
 						world[x][z][y] = Block{ 33, 33 };
-					else if (d > 90)
+					else if (d > 900)
 						world[x][z][y] = Block{ 34, 34 };
 					else
 						world[x][z][y] = Block{ 1, 1 };
@@ -92,10 +98,24 @@ void generateWorld() {
 				{
 					world[x][z][y] = Block{ 0, 3 };
 
-					int d = std::rand() % 100;
-					if (d > 98)
+					if (x == 0 && z == 0)
+					{
+						camera.posX = -blockSize / 2;
+						camera.posZ = -blockSize / 2;
+						camera.posY = (y + eyeheight) * -blockSize;
+						lastypos = camera.posY;
+					}
+
+					int d = std::rand() % 1000;
+					if (d > 998)
+						generateWater(x,z,y);
+					else if (d > 990)
 						generateTree(x, z, y+1);
-					else if (d > 93)
+					else if (d > 980)
+						world[x][z][y + 1] = Block{ -1, 12 };
+					else if (d > 970)
+						world[x][z][y + 1] = Block{ -1, 13 };
+					else if (d > 920)
 						world[x][z][y + 1] = Block{ -1, 39 };
 				}
 			}
@@ -176,6 +196,22 @@ void drawCube(int top, int sides)
 void drawCube(int texture)
 {
 	drawCube(texture, texture);
+}
+
+void generateWater(int xlocation, int zlocation, int ylocation)
+{
+	int size = std::rand() % 2 + 1; //Size from 1 to 2;
+
+	for (int x = (-size / 2); x <= (size / 2); x++)
+	{
+		for (int z = -(size / 2); z <= (size / 2); z++)
+		{
+			if (x + xlocation >= 0 && x + xlocation < worldWidth && z + zlocation >= 0 && z + zlocation < worldDepth)
+			{
+				world[x + xlocation][z+zlocation][ylocation] = Block{ 205,205 };
+			}
+		}
+	}
 }
 
 void generateTree(int xlocation, int zlocation, int ylocation)
@@ -261,6 +297,31 @@ void display()
 	glutSwapBuffers();
 }
 
+void gravity(float direction, float fac)
+{
+	int blockx = (int)(camera.posX / -blockSize);
+	int blockz = (int)(camera.posZ / -blockSize);
+
+	if (blockx >= worldWidth || blockx <= 0 || blockz >= worldDepth || blockz <= 0)
+		return;
+	
+	for (int y = 0; y < worldHeight; y++)
+	{
+		if (world[blockx][blockz][y].textureTop == -1)
+		{
+			float newpos = ((y - 1) + eyeheight) * -blockSize;
+
+			if (newpos >= lastypos - blockSize)
+			{
+				camera.posY = newpos;
+				lastypos = newpos;
+			}
+			
+			break;
+		}
+	}
+}
+
 void move(float angle, float fac)
 {
 	camera.posX += (float)cos((camera.rotY + angle) / 180 * M_PI) * fac;
@@ -276,7 +337,10 @@ void idle()
 {
 	float frameTime = glutGet(GLUT_ELAPSED_TIME)/1000.0f;
 	float deltaTime = frameTime - lastFrameTime;
+	float g = -9.8;
 	lastFrameTime = frameTime;
+
+	gravity(-1, deltaTime*g);
 
 	if (keys['+']) speed += speed > 25 ? 0 : 0.5;
 	if (keys['-']) speed -= speed < 5 ? 0 : 0.5;
@@ -285,8 +349,8 @@ void idle()
 	if (keys['d']) move(180, deltaTime*speed);
 	if (keys['w']) move(90, deltaTime*speed);
 	if (keys['s']) move(270, deltaTime*speed);
-	if (keys['q']) moveZ(-1, deltaTime*speed);
-	if (keys['e']) moveZ(1, deltaTime*speed);
+	//if (keys['q']) moveZ(-1, deltaTime*speed);
+	//if (keys['e']) moveZ(1, deltaTime*speed);
 
 	glutPostRedisplay();
 }
@@ -366,6 +430,8 @@ int main(int argc, char* argv[])
 
 	loadTexture();
 	generateWorld();
+
+	PlaySound(L"theme.wav", NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
 
 	glutMainLoop();
 
