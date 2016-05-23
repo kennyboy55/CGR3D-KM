@@ -63,7 +63,7 @@ void display()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60.0f, (float)width/height, 0.1, 5000);
+	gluPerspective(60.0f, (float)width/height, 0.1, 15000);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -123,7 +123,7 @@ void idle()
 	float deltaTime = frameTime - lastFrameTime;
 	lastFrameTime = frameTime;
 
-	const float speed = 50;
+	const float speed = 500;
 	if (keys['a']) move(0, deltaTime*speed);
 	if (keys['d']) move(180, deltaTime*speed);
 	if (keys['w']) move(90, deltaTime*speed);
@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
 	glutKeyboardUpFunc(keyboardUp);
 	glutPassiveMotionFunc(mousePassiveMotion);
 
-	heightmap = new HeightMap("worlds/hell.png");
+	heightmap = new HeightMap("worlds/HMCSHeightmap.gif");
 
 	cubeVertices.push_back(Vertex{ -1, -1, -1, 0,0,1, 1,1,1,1 });
 	cubeVertices.push_back(Vertex{ -1,  1, -1, 0,0,1, 1,1,1,1 });

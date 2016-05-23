@@ -12,6 +12,8 @@ HeightMap::HeightMap(const std::string &file)
 	int bpp;
 	unsigned char* imgData = stbi_load(file.c_str(), &width, &height, &bpp, 4);
 	
+	int scale = 50;
+
 	for (int h = 0; h < height; h++)
 	{
 		for (int w = 0; w < width; w++)
@@ -22,7 +24,7 @@ HeightMap::HeightMap(const std::string &file)
 				float y = ((float)imgData[((h + offsets[i][0]) + (w + offsets[i][1]) * width) * 4]);
 				y = (y / 256.0f) * 100.0f;
 
-				vertices.push_back(Vertex{ (float)(h + offsets[i][0]), y, (float)(w + offsets[i][1]),
+				vertices.push_back(Vertex{ (float)(h + offsets[i][0])*scale, y*scale, (float)(w + offsets[i][1])*scale,
 									0, 1, 0,
 									(h + offsets[i][0]) / (float)height, (w + offsets[i][1]) / (float)width } );
 			}
