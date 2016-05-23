@@ -150,10 +150,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HeightMap.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ObjModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HeightMap.h" />
     <ClInclude Include="ObjModel.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>

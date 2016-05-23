@@ -4,18 +4,22 @@
 #include <cmath>
 #include <vector>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "ObjModel.h"
+#include "HeightMap.h"
 
 float lastFrameTime = 0;
 
 int width, height;
 
+int currentModel = 0;
+vector<ObjModel*> models;
+HeightMap *heightmap;
 
 struct Camera
 {
 	float posX = 0;
 	float posY = -4;
+	float posZ = 0;
 	float rotX = 0;
 	float rotY = 0;
 } camera;
@@ -59,13 +63,13 @@ void display()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60.0f, (float)width/height, 0.1, 30);
+	gluPerspective(60.0f, (float)width/height, 0.1, 5000);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glRotatef(camera.rotX, 1, 0, 0);
 	glRotatef(camera.rotY, 0, 1, 0);
-	glTranslatef(camera.posX, 0, camera.posY);
+	glTranslatef(camera.posX, camera.posZ, camera.posY);
 
 	float pos[4] = { 0.5, 1, -1, 0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, pos);
@@ -79,6 +83,7 @@ void display()
 		glVertex3f(-15, -1,  15);
 	glEnd();
 
+	/*
 	for (int x = -10; x <= 10; x += 5)
 	{
 		for (int y = -10; y <= 10; y += 5)
@@ -90,6 +95,14 @@ void display()
 		}
 	}
 
+	glColor3f(0.1f, 1.0f, 1.0f);
+
+	models[currentModel]->draw();
+
+	*/
+
+	heightmap->Draw();
+
 	glutSwapBuffers();
 }
 
@@ -99,17 +112,24 @@ void move(float angle, float fac)
 	camera.posY += (float)sin((camera.rotY + angle) / 180 * M_PI) * fac;
 }
 
+void moveVert(float angle, float fac)
+{
+	camera.posZ += angle * fac;
+}
+
 void idle()
 {
 	float frameTime = glutGet(GLUT_ELAPSED_TIME)/1000.0f;
 	float deltaTime = frameTime - lastFrameTime;
 	lastFrameTime = frameTime;
 
-	const float speed = 3;
+	const float speed = 50;
 	if (keys['a']) move(0, deltaTime*speed);
 	if (keys['d']) move(180, deltaTime*speed);
 	if (keys['w']) move(90, deltaTime*speed);
 	if (keys['s']) move(270, deltaTime*speed);
+	if (keys['q']) moveVert(1, deltaTime*speed);
+	if (keys['e']) moveVert(-1, deltaTime*speed);
 
 	glutPostRedisplay();
 }
@@ -166,7 +186,7 @@ int main(int argc, char* argv[])
 	glutKeyboardUpFunc(keyboardUp);
 	glutPassiveMotionFunc(mousePassiveMotion);
 
-
+	heightmap = new HeightMap("worlds/HMCSHeightmap.gif");
 
 	cubeVertices.push_back(Vertex{ -1, -1, -1, 0,0,1, 1,1,1,1 });
 	cubeVertices.push_back(Vertex{ -1,  1, -1, 0,0,1, 1,1,1,1 });
@@ -199,7 +219,7 @@ int main(int argc, char* argv[])
 	cubeVertices.push_back(Vertex{ 1,  1, -1,		1,0,0,		1,1,1,1 });
 
 
-
+	models.push_back(new ObjModel("models/ship/shipA_OBJ.obj"));
 
 	glutWarpPointer(width / 2, height / 2);
 
