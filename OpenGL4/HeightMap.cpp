@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 
+GLuint imageIndex;
+
 HeightMap::HeightMap(const std::string &file)
 {
 	int bpp;
@@ -17,15 +19,30 @@ HeightMap::HeightMap(const std::string &file)
 			int offsets[4][2] = { { 0, 0 },{ 1, 0 },{ 1, 1 },{ 0, 1 } };
 			for (int i = 0; i < 4; i++)
 			{
-				float height = ((float)imgData[((h + offsets[i][0]) + (w + offsets[i][1]) * width) * 4]);
-				height = (height / 256.0f) * 100.0f;
+				float y = ((float)imgData[((h + offsets[i][0]) + (w + offsets[i][1]) * width) * 4]);
+				y = (y / 256.0f) * 100.0f;
 
-				vertices.push_back(Vertex{ (float)(h + offsets[i][0]), height, (float)(w + offsets[i][1]),
+				vertices.push_back(Vertex{ (float)(h + offsets[i][0]), y, (float)(w + offsets[i][1]),
 									0, 1, 0,
-									h*0.1f, (w*0.f) + offsets[i][1] });
+									(h + offsets[i][0]) / (float)height, (w + offsets[i][1]) / (float)width } );
 			}
 		}
 	}
+
+	glGenTextures(1, &imageIndex);
+	glBindTexture(GL_TEXTURE_2D, imageIndex);
+
+	glTexImage2D(GL_TEXTURE_2D,
+		0,		//level
+		GL_RGBA,		//internal format
+		width,		//width
+		height,		//height
+		0,		//border
+		GL_RGBA,		//data format
+		GL_UNSIGNED_BYTE,	//data type
+		imgData);		//data
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	stbi_image_free(imgData);
 }
@@ -36,16 +53,21 @@ HeightMap::~HeightMap()
 
 void HeightMap::Draw()
 {
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, imageIndex);
+
 	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	//glEnableClientState(GL_COLOR_ARRAY);
 	//glEnableClientState(GL_NORMAL_ARRAY);
 
 	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), ((float*)vertices.data()) + 0);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), ((float*)vertices.data()) + 6);
 	//glNormalPointer(GL_FLOAT, sizeof(Vertex), ((float*)cubeVertices.data()) + 3);
-	//glColorPointer(4, GL_FLOAT, sizeof(Vertex), ((float*)cubeVertices.data()) + 6);
 	glDrawArrays(GL_QUADS, 0, vertices.size());
 
 	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	//glDisableClientState(GL_COLOR_ARRAY);
 	//glDisableClientState(GL_NORMAL_ARRAY);
 }

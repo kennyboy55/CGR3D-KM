@@ -74,7 +74,7 @@ void display()
 	float pos[4] = { 0.5, 1, -1, 0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, pos);
 
-
+	/*
 	glColor3f(0.1f, 1.0f, 0.2f);
 	glBegin(GL_QUADS);
 		glVertex3f(-15, -1, -15);
@@ -83,7 +83,6 @@ void display()
 		glVertex3f(-15, -1,  15);
 	glEnd();
 
-	/*
 	for (int x = -10; x <= 10; x += 5)
 	{
 		for (int y = -10; y <= 10; y += 5)
@@ -101,6 +100,7 @@ void display()
 
 	*/
 
+	glColor3f(1.0f, 1.0f, 1.0f);
 	heightmap->Draw();
 
 	glutSwapBuffers();
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
 
 	memset(keys, 0, sizeof(keys));
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
 	glutIdleFunc(idle);
@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
 	glutKeyboardUpFunc(keyboardUp);
 	glutPassiveMotionFunc(mousePassiveMotion);
 
-	heightmap = new HeightMap("worlds/HMCSHeightmap.gif");
+	heightmap = new HeightMap("worlds/hell.png");
 
 	cubeVertices.push_back(Vertex{ -1, -1, -1, 0,0,1, 1,1,1,1 });
 	cubeVertices.push_back(Vertex{ -1,  1, -1, 0,0,1, 1,1,1,1 });
