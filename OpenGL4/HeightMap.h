@@ -12,6 +12,7 @@ public:
 	~HeightMap();
 
 	void Draw();
+	void GetHeigth(float x, float z);
 
 	struct Vertex {
 		float x;

@@ -34,7 +34,7 @@ struct Vertex
 };
 
 std::vector<Vertex> cubeVertices;
-
+float speed = 1000;
 
 void drawCube()
 {
@@ -63,7 +63,7 @@ void display()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60.0f, (float)width/height, 0.1, 15000);
+	gluPerspective(60.0f, (float)width/height, 0.1, 100000);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -123,13 +123,14 @@ void idle()
 	float deltaTime = frameTime - lastFrameTime;
 	lastFrameTime = frameTime;
 
-	const float speed = 500;
 	if (keys['a']) move(0, deltaTime*speed);
 	if (keys['d']) move(180, deltaTime*speed);
 	if (keys['w']) move(90, deltaTime*speed);
 	if (keys['s']) move(270, deltaTime*speed);
 	if (keys['q']) moveVert(1, deltaTime*speed);
 	if (keys['e']) moveVert(-1, deltaTime*speed);
+	if (keys['+']) speed += 100;
+	if (keys['-']) speed -= speed <= 100 ? 0 : 100;
 
 	glutPostRedisplay();
 }
@@ -186,7 +187,7 @@ int main(int argc, char* argv[])
 	glutKeyboardUpFunc(keyboardUp);
 	glutPassiveMotionFunc(mousePassiveMotion);
 
-	heightmap = new HeightMap("worlds/HMCSHeightmap.gif");
+	heightmap = new HeightMap("worlds/alps.png");
 
 	cubeVertices.push_back(Vertex{ -1, -1, -1, 0,0,1, 1,1,1,1 });
 	cubeVertices.push_back(Vertex{ -1,  1, -1, 0,0,1, 1,1,1,1 });

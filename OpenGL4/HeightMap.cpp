@@ -6,13 +6,12 @@
 #include <string>
 
 GLuint imageIndex;
+int scale = 50;
 
 HeightMap::HeightMap(const std::string &file)
 {
 	int bpp;
 	unsigned char* imgData = stbi_load(file.c_str(), &width, &height, &bpp, 4);
-	
-	int scale = 50;
 
 	for (int h = 0; h < height; h++)
 	{
@@ -72,4 +71,9 @@ void HeightMap::Draw()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	//glDisableClientState(GL_COLOR_ARRAY);
 	//glDisableClientState(GL_NORMAL_ARRAY);
+}
+
+void HeightMap::GetHeigth(float x, float z)
+{
+
 }
